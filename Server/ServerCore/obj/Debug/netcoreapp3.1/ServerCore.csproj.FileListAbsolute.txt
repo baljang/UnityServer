@@ -1,0 +1,14 @@
+C:\Riripong\Github\UnityServer\Server\ServerCore\bin\Debug\netcoreapp3.1\ServerCore.exe
+C:\Riripong\Github\UnityServer\Server\ServerCore\bin\Debug\netcoreapp3.1\ServerCore.deps.json
+C:\Riripong\Github\UnityServer\Server\ServerCore\bin\Debug\netcoreapp3.1\ServerCore.runtimeconfig.json
+C:\Riripong\Github\UnityServer\Server\ServerCore\bin\Debug\netcoreapp3.1\ServerCore.runtimeconfig.dev.json
+C:\Riripong\Github\UnityServer\Server\ServerCore\bin\Debug\netcoreapp3.1\ServerCore.dll
+C:\Riripong\Github\UnityServer\Server\ServerCore\bin\Debug\netcoreapp3.1\ServerCore.pdb
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.csproj.AssemblyReference.cache
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.GeneratedMSBuildEditorConfig.editorconfig
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.AssemblyInfoInputs.cache
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.AssemblyInfo.cs
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.csproj.CoreCompileInputs.cache
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.dll
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.pdb
+C:\Riripong\Github\UnityServer\Server\ServerCore\obj\Debug\netcoreapp3.1\ServerCore.genruntimeconfig.cache
