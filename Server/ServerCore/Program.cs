@@ -6,42 +6,35 @@ namespace ServerCore
 {
     internal class Program
     {
-        static void MainThread(object state)
+        volatile static bool _stop = false;  // 전역은 모든 스레드들이 동시 접근 가능. 스레드들이 동시 접근할 때 어떤 일이 일어날지 살펴본다.
+
+        static void ThreadMain()
         {
-            for(int i=0; i<5; i++)
-                Console.WriteLine("Hello Thead!"); 
+            Console.WriteLine("쓰레드 시작!");
+
+            while(_stop == false)
+            {
+                // 누군가가 stop 신호를 해주기를 기다린다
+            }
+
+            Console.WriteLine("쓰레드 종료!");
         }
 
         static void Main(string[] args)
         {
-            ThreadPool.SetMinThreads(1, 1);
-            ThreadPool.SetMaxThreads(5, 5);
+            Task t = new Task(ThreadMain);
+            t.Start();
 
-            for(int i=0; i<5; i++)
-            {
-                Task t = new Task(() => { while (true) { } });
-                t.Start();
-            }
+            Thread.Sleep(1000); // 1초 동안 잠들었다 다시 깨는 함수
 
-            //for (int i = 0; i < 4; i++)
-            //    ThreadPool.QueueUserWorkItem((obj) => { while (true) { } }); 
+            _stop = true;
 
-            ThreadPool.QueueUserWorkItem(MainThread); 
+            Console.WriteLine("Stop 호출");
+            Console.WriteLine("종료 대기중");
 
-            //Thread t = new Thread(MainThread); 
-            //t.Name = "Test Thread"; 
-            //t.IsBackground = true; 
-            //t.Start();
+            t.Wait();   // 스레드가 끝났는지 알아 보는 함수. Thread일 때는 Join, Task는 Wait
 
-            //Console.WriteLine("Waiting for Thread World!");
-
-            //t.Join(); 
-            //Console.WriteLine("Hello World!");
-
-            while(true)
-            {
-
-            }
+            Console.WriteLine("종료 성공");
         }
     }
 }
