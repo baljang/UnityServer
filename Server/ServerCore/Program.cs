@@ -6,41 +6,60 @@ namespace ServerCore
 {
     internal class Program
     {
-        static int _num = 0;
-        static Mutex _lock = new Mutex();
+        // 1. 근성
+        // 2. 양보
+        // 3. 갑질
 
-        static void Thread_1()
+        // 내부적으로 Monitor를 이용
+        static object _lock = new object();        
+        static SpinLock _lock2 = new SpinLock();
+
+        // RWLock, ReaderWriteLock
+        static ReaderWriterLockSlim _lock3 = new ReaderWriterLockSlim();
+
+        // 직접 만든다
+
+        class Reward
         {
-            for (int i = 0; i < 100000; i++)
-            {
-                _lock.WaitOne();
-                _lock.WaitOne();
-                _num++;
-                _lock.ReleaseMutex();
-                _lock.ReleaseMutex();
-            }
+
         }
 
-        static void Thread_2()
+        // 99.999999
+        static Reward GetRewardById(int id)
         {
-            for (int i = 0; i < 100000; i++)
-            {
-                _lock.WaitOne();
-                _num--;
-                _lock.ReleaseMutex();
-            }
+            _lock3.EnterReadLock();
+
+            _lock3.ExitReadLock(); 
+      
+            return null; 
         }
 
+        // 0.0000001%
+        static void AddReward(Reward reward)
+        {
+            _lock3.EnterWriteLock();
+
+            _lock3.ExitWriteLock(); 
+        }
+        
         static void Main(string[] args)
         {
-            Task t1 = new Task(Thread_1);
-            Task t2 = new Task(Thread_2);
-            t1.Start();
-            t2.Start();
+            lock (_lock)
+            {
+            
+            }
 
-            Task.WaitAll(t1, t2);
+            bool lockTaken = false;
+            try
+            {
+                _lock2.Enter(ref lockTaken);
+            }
+            finally
+            {
+                if(lockTaken)
+                    _lock2.Exit(); 
+            }
 
-            Console.WriteLine(_num);
         }
     }
 }
