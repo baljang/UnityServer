@@ -1,34 +1,65 @@
 ﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace ServerCore
 {
-    // [JobQueue]라는 애가 있는데 static이라는 공간에 있다고 하면 모든 스레드들이 다 동시 다발적으로 경합을 하게 될거야. 
-    // 그럼 락을 걸었다가 풀었다가 반복을 해야 하는데 한번 락을 잡을 때 일감을 하나만 빼오는게 아니라 TLS공간에다가 실컷 많이 뽑아 오면 된다는 얘기다. 
-    // 락을 한 번 걸고 최대한 많은 일감을 빼온 거니까  static ThreadLocal<string> ThreadName 여기 있는 일감을 처리하기 전까지는 다시하면 JobQueue이 전역에 있는 좌표에다 접근을 할 필요가 없게 된다. 
-    // 그런 식으로 부하를 줄일 수 있다는 얘기다 .
 
     class Program
     {
-        static ThreadLocal<string> ThreadName = new ThreadLocal<string>(() => { return $"My Name Is {Thread.CurrentThread.ManagedThreadId}"; }); // 자신만의 공간에 저장되기 때문에 특정 스레드에서 ThreadName을 고친다고 해도 다른 애들한테 영향을 주지 않게 된다. 
-
-        static void WhoAmI()
-        {
-            bool repeat = ThreadName.IsValueCreated;
-            if (repeat)
-                Console.WriteLine(ThreadName.Value + " (repeat)");
-            else
-                Console.WriteLine(ThreadName.Value); 
-        }
-        
+              
         static void Main(string[] args)
         {
-            ThreadPool.SetMinThreads(1, 1);
-            ThreadPool.SetMaxThreads(3, 3); 
-            Parallel.Invoke(WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI, WhoAmI);
+            // DNS ( Domain Name System )
+            string host = Dns.GetHostName();
+            IPHostEntry ipHost = Dns.GetHostEntry(host);
+            IPAddress ipAddr = ipHost.AddressList[0];
+            IPEndPoint endPoint = new IPEndPoint(ipAddr, 7777);
+            // ipAddre는 식당 주소, 7777은 식당 정문인지 후문인지 문의 번호
 
-            ThreadName.Dispose(); 
+            // 문지기(가 들고있는 휴대폰)
+            Socket listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // TCP로 할 때 설정
+
+            try
+            {
+
+                // 문지기 교육
+                listenSocket.Bind(endPoint); // 식당 주소와 후문인지 정문인지 기입을 해준 것
+
+                // 영업 시작
+                // backlog : 최대 대기수  
+                listenSocket.Listen(10);
+
+                while (true)
+                {
+                    Console.WriteLine("Listening...");
+
+                    // 손님을 입장시킨다.
+                    Socket clientSocket = listenSocket.Accept();
+
+                    // 받는다
+                    byte[] recvBuff = new byte[1024];
+                    int recvBytes = clientSocket.Receive(recvBuff);
+                    string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
+                    Console.WriteLine($"[FromClient] {recvData}");
+
+                    // 보낸다
+                    byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server !");
+                    clientSocket.Send(sendBuff);
+
+                    // 쫒아낸다 
+                    clientSocket.Shutdown(SocketShutdown.Both);
+                    clientSocket.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }       
+        
         }
     }
 }
