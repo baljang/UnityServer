@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace DummyClient
 {
@@ -17,33 +18,39 @@ namespace DummyClient
             // ipAddre는 식당 주소, 7777은 식당 정문인지 후문인지 문의 번호        }
             // 식당 주소 찾는 부분은 똑같을 거야. 
 
-            // 휴대폰 설정
-            Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            try
+            while(true)
             {
-                // 문지기한테 입장 문의
-                socket.Connect(endPoint);
-                Console.WriteLine($"Connected To {socket.RemoteEndPoint.ToString()}");
+                // 휴대폰 설정
+                Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-                // 보낸다
-                byte[] sendBuff = Encoding.UTF8.GetBytes("Hello World!");
-                int sendBytes = socket.Send(sendBuff);
+                try
+                {
+                    // 문지기한테 입장 문의
+                    socket.Connect(endPoint);
+                    Console.WriteLine($"Connected To {socket.RemoteEndPoint.ToString()}");
 
-                // 받는다
-                byte[] recvBuff = new byte[1024];
-                int recvBytes = socket.Receive(recvBuff);
-                string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
-                Console.WriteLine($"[From Server] {recvData}");
+                    // 보낸다
+                    byte[] sendBuff = Encoding.UTF8.GetBytes("Hello World!");
+                    int sendBytes = socket.Send(sendBuff);
 
-                // 나간다
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+                    // 받는다
+                    byte[] recvBuff = new byte[1024];
+                    int recvBytes = socket.Receive(recvBuff);
+                    string recvData = Encoding.UTF8.GetString(recvBuff, 0, recvBytes);
+                    Console.WriteLine($"[From Server] {recvData}");
+
+                    // 나간다
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
+
+                Thread.Sleep(100);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+          
         }
     }
 }
