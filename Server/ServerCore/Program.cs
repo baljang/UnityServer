@@ -22,7 +22,7 @@ namespace ServerCore
                 byte[] sendBuff = Encoding.UTF8.GetBytes("Welcome to MMORPG Server !");
                 session.Send(sendBuff);
 
-                Thread.Sleep(1000);
+                Thread.Sleep(10000);
 
                 session.Disconnect(); 
                 session.Disconnect(); 
