@@ -11,7 +11,7 @@ namespace ServerCore
         Socket _listenSocket;
         Action<Socket> _OnAcceptHandler; 
 
-        public void Init(IPEndPoint endPoint, Action<Socket> onAcceptHandler)
+         public void Init(IPEndPoint endPoint, Action<Socket> onAcceptHandler)
         {
             // 문지기(가 들고있는 휴대폰)
             _listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // TCP로 할 때 설정
@@ -24,9 +24,12 @@ namespace ServerCore
             // backlog : 최대 대기수  
             _listenSocket.Listen(10);
 
-            SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-            args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted); 
-            RegistterAccept(args); 
+            for(int i = 0; i < 10; i++)
+            {
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
+                RegistterAccept(args);
+            } 
         }
 
         void RegistterAccept(SocketAsyncEventArgs args)
