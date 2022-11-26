@@ -9,13 +9,13 @@ namespace ServerCore
     internal class Listener
     {
         Socket _listenSocket;
-        Action<Socket> _OnAcceptHandler; 
+        Func<Session> _sessionFactory; 
 
-         public void Init(IPEndPoint endPoint, Action<Socket> onAcceptHandler)
+         public void Init(IPEndPoint endPoint, Func<Session> sessionFactory)
         {
             // 문지기(가 들고있는 휴대폰)
             _listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp); // TCP로 할 때 설정
-            _OnAcceptHandler += onAcceptHandler;
+            _sessionFactory += sessionFactory;
 
             // 문지기 교육
             _listenSocket.Bind(endPoint); // 식당 주소와 후문인지 정문인지 기입을 해준 것
@@ -45,9 +45,9 @@ namespace ServerCore
         {
             if(args.SocketError == SocketError.Success) // 모든 게 잘 처리 됐다는 뜻
             {
-                // 유저가 커넥트 요청 해서 Accept 했으면 여기서 뭔가를 해주고 
-                // TODO
-                _OnAcceptHandler.Invoke(args.AcceptSocket);
+                Session session = _sessionFactory.Invoke(); 
+                session.Start(args.AcceptSocket);
+                session.OnConnected(args.AcceptSocket.RemoteEndPoint);
             }
             else
                 Console.WriteLine(args.SocketError.ToString());
