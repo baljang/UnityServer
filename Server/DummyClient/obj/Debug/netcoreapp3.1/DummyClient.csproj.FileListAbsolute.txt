@@ -12,3 +12,6 @@ C:\Riripong\Github\UnityServer\Server\DummyClient\obj\Debug\netcoreapp3.1\DummyC
 C:\Riripong\Github\UnityServer\Server\DummyClient\obj\Debug\netcoreapp3.1\DummyClient.dll
 C:\Riripong\Github\UnityServer\Server\DummyClient\obj\Debug\netcoreapp3.1\DummyClient.pdb
 C:\Riripong\Github\UnityServer\Server\DummyClient\obj\Debug\netcoreapp3.1\DummyClient.genruntimeconfig.cache
+C:\Riripong\Github\UnityServer\Server\DummyClient\bin\Debug\netcoreapp3.1\ServerCore.dll
+C:\Riripong\Github\UnityServer\Server\DummyClient\bin\Debug\netcoreapp3.1\ServerCore.pdb
+C:\Riripong\Github\UnityServer\Server\DummyClient\obj\Debug\netcoreapp3.1\DummyClient.csproj.CopyComplete
