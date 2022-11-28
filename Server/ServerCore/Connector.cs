@@ -10,7 +10,6 @@ namespace ServerCore
     {
         Func<Session> _sessionFactory;
 
-
         // Socket _socket; // 이렇게 하지 않는 이유는 Connect를 하나만 받는 경우도 있겠지만 여러명 받을 수 있기 때문
         public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory)
         {
