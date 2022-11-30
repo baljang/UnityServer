@@ -7,56 +7,7 @@ using System.Threading;
 
 namespace DummyClient
 {
-    class Packet
-    {
-        public ushort size;
-        public ushort packetId;
-    }
-
-    class GameSession : Session
-    {
-        public override void OnConnected(EndPoint endPoint)
-        {
-            Console.WriteLine($"OnConnected : {endPoint}");
-
-            Packet packet = new Packet() { size = 4, packetId = 7 };
-
-            // 보낸다
-            for (int i = 0; i < 5; i++)
-            {
-                ArraySegment<byte> openSegment = SendBufferHelper.Open(4096);
-                byte[] buffer = BitConverter.GetBytes(packet.size);
-                byte[] buffer2 = BitConverter.GetBytes(packet.packetId);
-                Array.Copy(buffer, 0, openSegment.Array, openSegment.Offset, buffer.Length);
-                Array.Copy(buffer2, 0, openSegment.Array, openSegment.Offset + buffer.Length, buffer2.Length);
-                ArraySegment<byte> sendBuff = SendBufferHelper.Close(packet.size);
-
-                Send(sendBuff);
-            }
-        }
-
-        public override void OnDisconnected(EndPoint endPoint)
-        {
-            Console.WriteLine($"OnDisconnected : {endPoint}");
-        }
-
-        // 이동 패킷 (3,2 좌표로 이동하고 싶다!) 
-        // 이동하고 싶다는 패킷의 번호가 15번이라고 하면 
-        // 15, 3, 2 이런 식으로 데이터가 들어가서 서버쪽에다가 쏴주면 서버에서는 이 패킷을 까서 15번이니까 클라이언트는 이동하고 싶어하구나 하고 
-        // 3, 2 좌표를 까서 이동하게 한다. 
-        public override int OnRecv(ArraySegment<byte> buffer)
-        {
-            string recvData = Encoding.UTF8.GetString(buffer.Array, buffer.Offset, buffer.Count);
-            Console.WriteLine($"[From Server] {recvData}");
-            return buffer.Count; 
-        }
-
-        public override void OnSend(int numOfBytes)
-        {
-            Console.WriteLine($"Transferred bytes: {numOfBytes}");
-        }
-    }
-
+   
     internal class Program
     {
         static void Main(string[] args)
@@ -71,7 +22,7 @@ namespace DummyClient
 
             Connector connector = new Connector();
 
-            connector.Connect(endPoint, () => { return new GameSession(); }); 
+            connector.Connect(endPoint, () => { return new ServerSession(); }); 
 
             while(true)
             {
