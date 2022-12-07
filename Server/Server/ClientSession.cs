@@ -63,7 +63,7 @@ namespace Server
 
             switch((PacketID)id)
             {
-                case PacketID.PlayerInfoReq:
+                case PacketID.PlayerInfoReq
                     {
                         long playerId = BitConverter.ToInt64(buffer.Array, buffer.Offset + count);
                         count += 8;
