@@ -9,22 +9,59 @@ using ServerCore;
 
 namespace Server
 {
-    class Packet
+    public abstract class Packet
     {
         public ushort size;
         public ushort packetId;
+
+        public abstract ArraySegment<byte> Write(); // 밀어 넣는 부분 Serialize
+        public abstract void Read(ArraySegment<byte> s); // 빼내 주는 부분 DeSerialize
     }
+
     class PlayerInfoReq : Packet    // 클라에서 서버로 플레이어 정보를 알고 싶어
     {
         public long playerId;
+
+        public PlayerInfoReq()
+        {
+            this.packetId = (ushort)PacketID.PlayerInfoReq;
+        }
+
+        public override void Read(ArraySegment<byte> s)
+        {
+            ushort count = 0;
+
+            //ushort size = BitConverter.ToUInt16(s.Array, s.Offset); 
+            count += 2;
+            //ushort id = BitConverter.ToUInt16(s.Array, s.Offset + count); 
+            count += 2;
+            this.playerId = BitConverter.ToInt64(new ReadOnlySpan<byte>(s.Array, s.Offset + count, s.Count - count));
+            count += 8;
+        }
+
+        public override ArraySegment<byte> Write()
+        {
+            ArraySegment<byte> s = SendBufferHelper.Open(4096);
+
+            ushort count = 0; // 지금까지 몇 바이트를 버퍼에 밀어 넣었는지 추적할거야.
+            bool success = true;
+
+            // 혹시라도 중간에 한번이라도 실패하면 false가 뜬다.
+            //success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), packet.size);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), (ushort)PacketID.PlayerInfoReq);
+            count += 2;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset + count, s.Count - count), this.playerId);
+            count += 8;
+            success &= BitConverter.TryWriteBytes(new Span<byte>(s.Array, s.Offset, s.Count), count);
+
+            if (success == false)
+                return null;
+
+            return SendBufferHelper.Close(count);
+        }
     }
 
-
-    class PlayerInfoOk : Packet     // 서버에서 클라로 답변을 주는 거 
-    {
-        public int hp;
-        public int attack;
-    }
 
     public enum PacketID
     {
@@ -63,11 +100,11 @@ namespace Server
 
             switch((PacketID)id)
             {
-                case PacketID.PlayerInfoReq
+                case PacketID.PlayerInfoReq:
                     {
-                        long playerId = BitConverter.ToInt64(buffer.Array, buffer.Offset + count);
-                        count += 8;
-                        Console.WriteLine($"PlayerInfoReq: {playerId}"); 
+                        PlayerInfoReq p = new PlayerInfoReq();
+                        p.Read(buffer); 
+                        Console.WriteLine($"PlayerInfoReq: {p.playerId}"); 
                     }
                     break;
             }            
